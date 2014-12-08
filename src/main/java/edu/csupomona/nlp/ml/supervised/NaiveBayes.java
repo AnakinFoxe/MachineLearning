@@ -35,9 +35,9 @@ public class NaiveBayes {
     private final List<TrainData> trainData;
     
     private List<String> aspects;
-    private HashMap<String, Integer> aspectSentences;
+    private HashMap<String, Long> aspectSentences;
     
-    private int aspectSentTotal;
+    private Long aspectSentTotal = 0L;
     
     private final Pattern ptnWN = Pattern.compile("ngram_W([0-9]+)_N([0-9]+).*");
     
@@ -94,21 +94,21 @@ public class NaiveBayes {
         return wn;
     }
     
-    private HashMap<String, Integer> readAspectSent(File file) 
+    private HashMap<String, Long> readAspectSent(File file)
             throws IOException{
         FileReader fr = new FileReader(file);
         
         if (this.aspects == null)
             aspects = new ArrayList<>();
         
-        Integer countAll = 0;
+        Long countAll = 0L;
         String line;
-        HashMap<String, Integer> map = new HashMap<>();
+        HashMap<String, Long> map = new HashMap<>();
         try (BufferedReader br = new BufferedReader(fr)) {
             while ((line = br.readLine()) != null) {
                 String[] items = line.split(":");
                 
-                map.put(items[0], Integer.valueOf(items[1].trim()));
+                map.put(items[0], Long.valueOf(items[1].trim()));
                 
                 if (!items[0].equals("others"))
                     countAll += Integer.valueOf(items[1].trim());
@@ -181,7 +181,7 @@ public class NaiveBayes {
     
     public void train(List<String> aspects, 
             HashMap<String, List<Integer>> freqMap, 
-            Integer W, Integer N, int[] aspectSentences) {
+            Integer W, Integer N, Long[] aspectSentences) {
         TrainData data = new TrainData();
         
         data.freqMap = freqMap;
@@ -201,7 +201,7 @@ public class NaiveBayes {
             this.aspects = new ArrayList<>();
         
         this.aspectSentences = new HashMap<>();
-        int sum = 0;
+        Long sum = 0L;
         for (int i = 0; i < aspects.size(); i++) {
             this.aspectSentences.put(aspects.get(i), aspectSentences[i]);
             sum += aspectSentences[i];
