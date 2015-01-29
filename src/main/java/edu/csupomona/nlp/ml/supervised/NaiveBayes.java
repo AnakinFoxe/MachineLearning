@@ -7,12 +7,14 @@
 package edu.csupomona.nlp.ml.supervised;
 
 import edu.csupomona.nlp.util.NGram;
+import edu.csupomona.nlp.util.Stemmer;
 import edu.csupomona.nlp.util.Stopword;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -42,9 +44,15 @@ public class NaiveBayes {
     private final Pattern ptnWN = Pattern.compile("ngram_W([0-9]+)_N([0-9]+).*");
     
     private final Stopword sw;
+    private final Stemmer st;
+
+    private boolean enableStemmer;
     
     public NaiveBayes() {
         sw = new Stopword("en");
+        st = new Stemmer("en");
+
+        enableStemmer = true;
         
         trainData = new ArrayList<>();
     }
@@ -248,12 +256,24 @@ public class NaiveBayes {
     
     private double calProbability(String aspect, String sentence) {
         String adjustedSentence = adjustSent(sentence).toLowerCase();
-        String[] words = adjustedSentence.split(" ");
+        String[] rawWords = adjustedSentence.split(" ");
+
+
 
         double sentenceProb;
-        if(words.length > 0){
+        if(rawWords.length > 0){
             sentenceProb = Math.log((double)this.aspectSentences.get(aspect) 
                     / this.aspectSentTotal);    // bugfix: add Math.log
+
+            // stemming
+            List<String> words = new ArrayList<>();
+            if (enableStemmer)
+                for (String word : rawWords) {
+                    word = st.stemWord(word);
+                    words.add(word);
+                }
+            else
+                words.addAll(Arrays.asList(rawWords));
             
             for (TrainData data : trainData) {
                 int N = data.N;
@@ -261,7 +281,7 @@ public class NaiveBayes {
                 // get n-gram from the sentence
                 HashMap<String, Integer> map = new HashMap<>();
                 if (N == 1) {
-                    String[] trimWords = sw.rmStopword(words);
+                    List<String> trimWords = sw.rmStopword(words);
                     NGram.updateNGram(N, map, trimWords);
                 } else 
                     NGram.updateNGram(N, map, words);
