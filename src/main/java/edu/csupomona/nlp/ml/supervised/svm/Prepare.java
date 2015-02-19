@@ -1,4 +1,4 @@
-package edu.csupomona.nlp.ml.supervised.LibSvm;
+package edu.csupomona.nlp.ml.supervised.svm;
 
 import edu.csupomona.nlp.util.*;
 
