@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package edu.csupomona.nlp.ml.unsupervised;
+package edu.cpp.iipl.ml.unsupervised;
 
 /**
  *

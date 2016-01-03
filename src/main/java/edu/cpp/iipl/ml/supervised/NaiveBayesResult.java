@@ -1,4 +1,4 @@
-package edu.csupomona.nlp.ml.supervised;
+package edu.cpp.iipl.ml.supervised;
 
 public class NaiveBayesResult {
 	private String label;
